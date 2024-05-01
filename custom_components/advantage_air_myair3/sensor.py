@@ -77,6 +77,6 @@ class ZonePowerSensor(SensorEntity):
     def __init__(self,zone):
         self.zone = zone
         self.name = get_zone_name(self.zone)
-        self._attr_name = f"{self.name} (Zone {zone}) Power"
+        self._attr_name = f"{self.name} (Zone {self.zone}) Power"
     def update(self) -> None:
         self._attr_native_value = get_zone_on_off(self.zone)

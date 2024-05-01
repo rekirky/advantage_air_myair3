@@ -29,11 +29,15 @@ url = "http://192.168.86.56/"
 # Functions to get data
 
 async def async_login(hass):
-    """Asynchronously log into the system using the shared session."""
+    global url
     site = f"{url}login"
     params = {"password": "password"}
-    session = async_get_clientsession(hass)  # Get HA's managed session
-    await session.get(site, params=params)  # Use this session for the request
+    session = async_get_clientsession(hass)
+    try:
+        await session.get(site, params=params)
+    except aiohttp.ClientError as e:
+        print(f"Login failed: {e}")
+        # Consider a retry mechanism here
 
 async def async_get_on_off(hass):
     site = f"{url}getSystemData"
@@ -77,13 +81,11 @@ async def async_setup_platform(
     async_add_entities(sensors)
 
 async def async_get_zone_name(hass, zone):
-    """Asynchronously fetch the zone name."""
-    session = async_get_clientsession(hass)  # Get HA's managed session
-    await async_login(hass)  # Call login with the session
+    global url
     site = f"{url}getZoneData?zone={zone}"
-    
+    session = async_get_clientsession(hass)
     try:
-        async with session.get(site) as response:
+        async with session.get(site, timeout=10) as response:  # 10 seconds timeout
             response_text = await response.text()
             root = ET.fromstring(response_text)
             zone_name = root.find(".//name").text

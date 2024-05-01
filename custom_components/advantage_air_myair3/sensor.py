@@ -38,16 +38,6 @@ def get_on_off():
     aircon_on_off = root.find(".//airconOnOff").text
     return(aircon_on_off)
 
-def setup_platform(
-    hass: HomeAssistant,
-    config: ConfigType,
-    add_entities: AddEntitiesCallback,
-    discovery_info: DiscoveryInfoType | None = None
-) -> None:
-    """Set up the sensor platform."""
-    sensors = [ZonePowerSensor(i) for i in range(1,7)]
-    add_entities(sensors, PowerSensor())
-
 def get_zone_on_off(zone):
     global url
     login()
@@ -66,22 +56,27 @@ def get_zone_name(zone):
     zone_name = root.find(".//name").text
     return(zone_name)
 
-class PowerSensor(SensorEntity):
-    """Representation of a Sensor."""
+def setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    add_entities: AddEntitiesCallback,
+    discovery_info: DiscoveryInfoType | None = None
+) -> None:
+    #Set up the sensor platform.
+    #Make sure sensors are added here to appear in HA
+    sensors = [ZonePowerSensor(i) for i in range(1,7)]
+    add_entities(sensors, PowerSensor())
 
+
+class PowerSensor(SensorEntity):
     _attr_name = "Air Con Power"
-    
     def update(self) -> None:
         self._attr_native_value = get_on_off()
     
-
 class ZonePowerSensor(SensorEntity):
     def __init__(self,zone):
         self.zone = zone
-        self.name = get_zone_name(zone)
+        self.name = get_zone_name(self.zone)
         self._attr_name = f"{self.name} (Zone {zone}) Power"
-
     def update(self) -> None:
         self._attr_native_value = get_zone_on_off(self.zone)
-
-

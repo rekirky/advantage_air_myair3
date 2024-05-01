@@ -78,7 +78,8 @@ async def async_setup_platform(
 ) -> None:
     # Set up the sensor platform asynchronously
     sensors = [ZonePowerSensor(i) for i in range(1, 7)]
-    async_add_entities(sensors)
+    async_add_entities(sensors,PowerSensor())
+    
 
 async def async_get_zone_name(hass, zone):
     global url

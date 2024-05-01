@@ -26,9 +26,14 @@ import aiohttp
 global url
 url = "http://192.168.86.56/"
 
-async def async_login(session):
+# Functions to get data
+
+async def async_login(hass):
+    """Asynchronously log into the system using the shared session."""
+    site = f"{url}login"
     params = {"password": "password"}
-    await session.get(url, params=params)  # Assume this logs you in for subsequent requests
+    session = async_get_clientsession(hass)  # Get HA's managed session
+    await session.get(site, params=params)  # Use this session for the request
 
 async def async_get_on_off(hass):
     site = f"{url}getSystemData"
@@ -46,7 +51,8 @@ async def async_get_on_off(hass):
 
 async def async_get_zone_on_off(hass, zone):
     """Asynchronously get the on/off status of a zone."""
-    await async_login(hass)  # Ensure you're logged in before making the request
+    session = async_get_clientsession(hass)  # Get HA's managed session
+    await async_login(hass)  # Call login with the session
     site = f"{url}getZoneData?zone={zone}"
     session = async_get_clientsession(hass)
     
@@ -70,11 +76,12 @@ async def async_setup_platform(
     sensors = [ZonePowerSensor(i) for i in range(1, 7)]
     async_add_entities(sensors)
 
-
 async def async_get_zone_name(hass, zone):
-    async_login()
+    """Asynchronously fetch the zone name."""
+    session = async_get_clientsession(hass)  # Get HA's managed session
+    await async_login(hass)  # Call login with the session
     site = f"{url}getZoneData?zone={zone}"
-    session = async_get_clientsession(hass)  # Use Home Assistant's aiohttp session
+    
     try:
         async with session.get(site) as response:
             response_text = await response.text()
@@ -84,6 +91,9 @@ async def async_get_zone_name(hass, zone):
     except Exception as e:
         print(f"Error fetching zone name: {e}")
         return None
+
+
+# Classes
 
 class PowerSensor(SensorEntity):
     _attr_name = "Air Con Power"

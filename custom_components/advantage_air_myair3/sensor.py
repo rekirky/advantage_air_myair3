@@ -61,6 +61,7 @@ def get_zone_name(zone):
     global url
     login()
     site = f"{url}getZoneData?zone={zone}"
+    response = requests.get(site)
     root = ET.fromstring(response.text)
     zone_name = root.find(".//name").text
     return(zone_name)
@@ -78,7 +79,7 @@ class ZonePowerSensor(SensorEntity):
     def __init__(self,zone):
         self.zone = zone
         self.name = get_zone_name(zone)
-        self._attr_name = f"{name} (Zone {zone}) Power"
+        self._attr_name = f"{self.name} (Zone {zone}) Power"
 
     def update(self) -> None:
         self._attr_native_value = get_zone_on_off(self.zone)

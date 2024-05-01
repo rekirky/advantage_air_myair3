@@ -105,7 +105,7 @@ class PowerSensor(SensorEntity):
 class ZonePowerSensor(SensorEntity):
     def __init__(self, zone):
         self.zone = zone
-        self._attr_name = f"Zone {zone} Power Sensor (Default)"  # Default name until updated
+        self._attr_name = f"Zone {zone} Power Sensor"  # Default name until updated
 
     async def async_update(self):
         """Asynchronously update the sensor status."""

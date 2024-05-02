@@ -77,11 +77,11 @@ async def async_setup_platform(
     discovery_info: DiscoveryInfoType | None = None
 ) -> None:
     # Set up the sensor platform asynchronously
-    sensors = [ZonePowerSensor(i) for i in range(1, 7)]
-    async_add_entities(sensors,PowerSensor())
-    
-
-async def async_get_zone_name(hass, zone):
+    add_entities(PowerSensor())
+    sensors = [ZonePowerSensor(i) for i in range(1, 2)]
+    add_entities(sensors)
+  
+  async def async_get_zone_name(hass, zone):
     global url
     site = f"{url}getZoneData?zone={zone}"
     session = async_get_clientsession(hass)
@@ -95,9 +95,7 @@ async def async_get_zone_name(hass, zone):
         print(f"Error fetching zone name: {e}")
         return None
 
-
 # Classes
-
 class PowerSensor(SensorEntity):
     _attr_name = "Air Con Power"
     def update(self) -> None:

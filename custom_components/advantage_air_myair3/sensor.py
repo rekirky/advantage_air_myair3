@@ -97,7 +97,7 @@ async def async_get_zone_name(hass, zone):
 class PowerSensor(SensorEntity):
     _attr_name = "Air Con Power"
     def update(self) -> None:
-        self._attr_native_value = async_get_on_off()
+        self._attr_native_value = async_get_on_off(self.hass)
     
 class ZonePowerSensor(SensorEntity):
     def __init__(self, zone):

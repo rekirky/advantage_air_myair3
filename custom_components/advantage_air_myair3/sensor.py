@@ -81,7 +81,7 @@ async def async_setup_platform(
     sensors = [ZonePowerSensor(i) for i in range(1, 2)]
     add_entities(sensors)
   
-  async def async_get_zone_name(hass, zone):
+async def async_get_zone_name(hass, zone):
     global url
     site = f"{url}getZoneData?zone={zone}"
     session = async_get_clientsession(hass)

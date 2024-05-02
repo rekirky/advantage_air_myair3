@@ -22,6 +22,9 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession # type:
 import requests
 import xml.etree.ElementTree as ET
 import aiohttp
+import logging
+
+logger = logging.getLogger(__name__)
 
 global url
 url = "http://192.168.86.56/"
@@ -65,10 +68,8 @@ async def async_get_on_off(hass):
 async def async_get_zone_on_off(hass, zone):
     """Asynchronously get the on/off status of a zone."""
     session = async_get_clientsession(hass)  # Get HA's managed session
-    await async_login(hass)  # Call login with the session
+    await async_login(hass, session)  # Ensure login uses the same session if needed
     site = f"{url}getZoneData?zone={zone}"
-    session = async_get_clientsession(hass)
-    
     try:
         async with session.get(site) as response:
             response_text = await response.text()
@@ -76,7 +77,7 @@ async def async_get_zone_on_off(hass, zone):
             zone_on_off = root.find(".//setting").text
             return zone_on_off
     except Exception as e:
-        print(f"Error fetching zone status: {e}")
+        logger.error(f"Error fetching zone status: {e}")
         return None
 
 async def async_get_zone_name(hass, zone):
@@ -96,16 +97,22 @@ async def async_get_zone_name(hass, zone):
 # Classes
 class PowerSensor(SensorEntity):
     _attr_name = "Air Con Power"
-    def update(self) -> None:
+
+    async def async_update(self) -> None:
+        """Asynchronously update the sensor value."""
         self._attr_native_value = await async_get_on_off(self.hass)
     
 class ZonePowerSensor(SensorEntity):
     def __init__(self, zone):
         self.zone = zone
         self._attr_name = f"Zone {zone} Power Sensor"  # Default name until updated
+
     async def async_update(self):
         """Asynchronously update the sensor status."""
-        self._attr_name = await async_get_zone_name(self.hass, self.zone)
-        self._attr_native_value = await async_get_zone_on_off(self.hass, self.zone)
-
+        try:
+            self._attr_name = await async_get_zone_name(self.hass, self.zone)
+            self._attr_native_value = await async_get_zone_on_off(self.hass, self.zone)
+        except Exception as e:
+            # Log an error message or handle the exception in a way that's appropriate for your setup
+            logger.error(f"Failed to update Zone {self.zone}: {e}")
 

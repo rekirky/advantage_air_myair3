@@ -1,12 +1,12 @@
-# custom_components/myintegration/config_flow.py
+# custom_components/AdvantageAirMyAir3/config_flow.py
 from homeassistant import config_entries
 from homeassistant.core import callback
 import voluptuous as vol
 
 from .const import DOMAIN
 
-class MyIntegrationConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for MyIntegration."""
+class AdvantateAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+    """Handle a config flow for Advantage Air MyAir3."""
 
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
@@ -46,13 +46,13 @@ class MyIntegrationConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        return MyIntegrationOptionsFlowHandler(config_entry)
+        return AdvantageAirMyAir3OptionsFlowHandler(config_entry)
 
-class MyIntegrationOptionsFlowHandler(config_entries.OptionsFlow):
-    """Handle MyIntegration options."""
+class AdvantageAirMyAir3OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handle AdvantageAirMyAir3 options."""
 
     def __init__(self, config_entry):
-        """Initialize MyIntegration options flow."""
+        """Initialize AdvantageAirMyAir3 options flow."""
         self.config_entry = config_entry
 
     async def async_step_init(self, user_input=None):

@@ -27,6 +27,15 @@ global url
 url = "http://192.168.86.56/"
 
 # Functions to get data
+async def async_setup_platform(
+    hass: HomeAssistant,
+    config: ConfigType,
+    async_add_entities: AddEntitiesCallback,
+    discovery_info: DiscoveryInfoType | None = None
+    ) -> None:
+    # Set up the sensor platform asynchronously
+    sensors = [ZonePowerSensor(i) for i in range(1, 7)]
+    async_add_entities([PowerSensor()],sensors)    
 
 async def async_login(hass):
     global url
@@ -70,17 +79,6 @@ async def async_get_zone_on_off(hass, zone):
         print(f"Error fetching zone status: {e}")
         return None
 
-async def async_setup_platform(
-    hass: HomeAssistant,
-    config: ConfigType,
-    async_add_entities: AddEntitiesCallback,
-    discovery_info: DiscoveryInfoType | None = None
-    ) -> None:
-    # Set up the sensor platform asynchronously
-    sensors = [ZonePowerSensor(i) for i in range(1, 7)]
-    async_add_entities([PowerSensor()],sensors)    
-
-      
 async def async_get_zone_name(hass, zone):
     global url
     site = f"{url}getZoneData?zone={zone}"
@@ -105,7 +103,6 @@ class ZonePowerSensor(SensorEntity):
     def __init__(self, zone):
         self.zone = zone
         self._attr_name = f"Zone {zone} Power Sensor"  # Default name until updated
-
     async def async_update(self):
         """Asynchronously update the sensor status."""
         self._attr_name = await async_get_zone_name(self.hass, self.zone)

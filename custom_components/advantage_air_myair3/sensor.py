@@ -40,36 +40,34 @@ async def async_setup_platform(
     sensors = [ZonePowerSensor(i) for i in range(1, 7)]
     async_add_entities([PowerSensor()] + sensors, True)    
 
-async def async_login(hass):
-    global url
+async def async_login(hass,session):
     site = f"{url}login"
     params = {"password": "password"}
-    session = async_get_clientsession(hass)
     try:
         await session.get(site, params=params)
     except aiohttp.ClientError as e:
-        print(f"Login failed: {e}")
+        logger.error(f"Login failed: {e}")
         # Consider a retry mechanism here
 
 async def async_get_on_off(hass):
     site = f"{url}getSystemData"
     session = async_get_clientsession(hass)  # Use Home Assistant's session management
-
+    await async_login(hass, session)  # Ensure login uses the same session if needed
     try:
         async with session.get(site) as response:
             response_text = await response.text()
             root = ET.fromstring(response_text)
             aircon_on_off = root.find(".//airconOnOff").text
             return aircon_on_off
-    except Exception as e:
-        print(f"Error fetching system status: {e}")
+    except Exception as e:ng
+        logger.error(f"Error fetching system status: {e}")
         return None
 
 async def async_get_zone_on_off(hass, zone):
     """Asynchronously get the on/off status of a zone."""
+    site = f"{url}getZoneData?zone={zone}"
     session = async_get_clientsession(hass)  # Get HA's managed session
     await async_login(hass, session)  # Ensure login uses the same session if needed
-    site = f"{url}getZoneData?zone={zone}"
     try:
         async with session.get(site) as response:
             response_text = await response.text()
@@ -81,9 +79,9 @@ async def async_get_zone_on_off(hass, zone):
         return None
 
 async def async_get_zone_name(hass, zone):
-    global url
     site = f"{url}getZoneData?zone={zone}"
     session = async_get_clientsession(hass)
+    await async_login(hass, session)  # Ensure login uses the same session if needed
     try:
         async with session.get(site, timeout=10) as response:  # 10 seconds timeout
             response_text = await response.text()
@@ -91,7 +89,7 @@ async def async_get_zone_name(hass, zone):
             zone_name = root.find(".//name").text
             return zone_name.title()
     except Exception as e:
-        print(f"Error fetching zone name: {e}")
+        logger.error(f"Error fetching zone name: {e}")
         return None
 
 # Classes

@@ -59,7 +59,7 @@ async def async_get_on_off(hass):
             root = ET.fromstring(response_text)
             aircon_on_off = root.find(".//airconOnOff").text
             return aircon_on_off
-    except Exception as e:ng
+    except Exception as e:
         logger.error(f"Error fetching system status: {e}")
         return None
 

@@ -2,10 +2,12 @@
 from homeassistant import config_entries
 from homeassistant.core import callback
 import voluptuous as vol
+import asyncio
 
 from .const import DOMAIN
+from find_ip import find_ip_and_mac
 
-class AdvantateAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Advantage Air MyAir3."""
 
     VERSION = 1
@@ -15,17 +17,13 @@ class AdvantateAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         errors = {}
         if user_input is not None:
-            # Here you would normally validate the IP address.
-            # For simplicity, we'll assume it's always valid.
-            # You might want to verify that the device is reachable with the given IP.
-            
-            # Example validation
-            ip_address = user_input.get("ip_address")
-            if not self._validate_ip(ip_address):
-                errors["base"] = "invalid_ip"
+            ip_address, mac_address = await self.hass.async_add_executor_job(find_ip_and_mac)
+            if ip_address is None or mac_address is None:
+                errors["base"] = "discovery_error"
             else:
-                await self.async_set_unique_id(ip_address)
+                await self.async_set_unique_id(mac_address)
                 self._abort_if_unique_id_configured()
+                user_input["ip_address"] = ip_address  # Automatically populate IP from discovery
                 return self.async_create_entry(title="My Device", data=user_input)
 
         return self.async_show_form(

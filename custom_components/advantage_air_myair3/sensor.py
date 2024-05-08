@@ -19,7 +19,6 @@ BinarySensorDeviceClass
 
 from homeassistant.helpers.aiohttp_client import async_get_clientsession # type: ignore
 
-import requests
 import xml.etree.ElementTree as ET
 import aiohttp
 import logging
@@ -37,8 +36,9 @@ async def async_setup_platform(
     discovery_info: DiscoveryInfoType | None = None
     ) -> None:
     # Set up the sensor platform asynchronously
-    sensors = [ZonePowerSensor(i) for i in range(1, 7)]
-    async_add_entities([PowerSensor()] + sensors, True)    
+    sensorpower = [ZonePowerSensor(i) for i in range(1, 7)]
+    sensorname = [ZoneNameSensor(i) for i in range (1,7)]
+    async_add_entities([PowerSensor()] + sensorpower + sensorname, True)    
 
 async def async_login(hass,session):
     site = f"{url}login"
@@ -103,14 +103,22 @@ class PowerSensor(SensorEntity):
 class ZonePowerSensor(SensorEntity):
     def __init__(self, zone):
         self.zone = zone
-        self._attr_name = f"Zone {zone} Power Sensor"  # Default name until updated
+        self._attr_name = f"Air Con Zone {zone} Power" 
 
     async def async_update(self):
         """Asynchronously update the sensor status."""
         try:
-            self._attr_name = await async_get_zone_name(self.hass, self.zone)
             self._attr_native_value = await async_get_zone_on_off(self.hass, self.zone)
         except Exception as e:
             # Log an error message or handle the exception in a way that's appropriate for your setup
             logger.error(f"Failed to update Zone {self.zone}: {e}")
 
+class ZoneNameSensor(SensorEntity):
+    def __init__(self, zone):
+        self._attr_name = f"Air Con Zone {zone} Name"
+
+    async def async_update(self):
+        try:
+            self._attr_native_value = await async_get_zone_name(self.hass,self.zone)
+        except Exception as e:
+            logger.error(f"Failed to get zone name")

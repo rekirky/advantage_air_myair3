@@ -14,23 +14,22 @@ from .find_ip import find_ip_and_mac
 
 class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Advantage Air MyAir3."""
-    logging.error("Const_Flow - {self.domain}")
+    logging.error(f"Const_Flow Hit - {domain}")
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
     logging.error("Hit class")
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         errors = {}
-        if user_input is not None:
+        if user_input is None:
             ip_address, mac_address = await self.hass.async_add_executor_job(find_ip_and_mac)
-            logging.error("IP & Mac Found. {ip_address}")
+            logging.error(f"IP & Mac Found. {ip_address}")
             if ip_address is None or mac_address is None:
                 errors["base"] = "discovery_error"
             else:
                 await self.async_set_unique_id(mac_address)
                 self._abort_if_unique_id_configured()
-                user_input["ip_address"] = ip_address  # Automatically populate IP from discovery
-                return self.async_create_entry(title="My Device", data=user_input)
+                return self.async_create_entry(title="Advantage Air IP Address", data=ip_address)
 
         return self.async_show_form(
             step_id="user", data_schema=vol.Schema({

@@ -27,7 +27,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 global url
-url = "http://192.168.86.56/"
+url = "http://192.168.86.68/"
 
 # Functions to get data
 async def async_setup_platform(

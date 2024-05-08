@@ -3,6 +3,9 @@ from homeassistant import config_entries
 from homeassistant.core import callback
 import voluptuous as vol
 import asyncio
+import logging
+
+_LOGGER = logging.getLogger(__name__)
 
 from .const import DOMAIN
 from find_ip import find_ip_and_mac
@@ -37,8 +40,10 @@ class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         import ipaddress
         try:
             ipaddress.ip_address(ip)
+            logging.error("IP Validated")
             return True
         except ValueError:
+            logging.error("IP Not Found")
             return False
 
     @staticmethod
@@ -61,3 +66,4 @@ class AdvantageAirMyAir3OptionsFlowHandler(config_entries.OptionsFlow):
                 vol.Required("ip_address", default=self.config_entry.data.get("ip_address")): str,
             })
         )
+ 

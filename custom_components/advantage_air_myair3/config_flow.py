@@ -7,8 +7,9 @@ import logging
 
 _LOGGER = logging.getLogger(__name__)
 
-from const import DOMAIN
-from advantage_air_myair3.find_ip import find_ip_and_mac
+from .const import (DOMAIN)
+
+from .find_ip import find_ip_and_mac
 
 
 class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):

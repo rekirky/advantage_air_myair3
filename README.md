@@ -18,6 +18,9 @@ Get MVP
 ** All zones are viewable and their status (on/off)
 ** Show power status (on/off)
 
+v 0.0.2
+Add in functionality to self-locate the system IP and configure
+
 ### Future
 Power switch
 Zone switches

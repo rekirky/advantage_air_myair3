@@ -10,17 +10,19 @@ _LOGGER = logging.getLogger(__name__)
 from const import DOMAIN
 from find_ip import find_ip_and_mac
 
+
 class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Advantage Air MyAir3."""
-
+    logging.error("Const_Flow - {self.domain}")
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
-
+    logging.error("Hit class")
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         errors = {}
         if user_input is not None:
             ip_address, mac_address = await self.hass.async_add_executor_job(find_ip_and_mac)
+            logging.error("IP & Mac Found. {ip_address}")
             if ip_address is None or mac_address is None:
                 errors["base"] = "discovery_error"
             else:
@@ -53,7 +55,7 @@ class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 class AdvantageAirMyAir3OptionsFlowHandler(config_entries.OptionsFlow):
     """Handle AdvantageAirMyAir3 options."""
-
+    logging.error("Hit 2nd class")
     def __init__(self, config_entry):
         """Initialize AdvantageAirMyAir3 options flow."""
         self.config_entry = config_entry

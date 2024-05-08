@@ -23,10 +23,12 @@ import xml.etree.ElementTree as ET
 import aiohttp
 import logging
 
+from find_ip import find_ip_and_mac
+
 logger = logging.getLogger(__name__)
 
 global url
-url = "http://192.168.86.68/"
+url,mac = find_ip_and_mac()
 
 # Functions to get data
 async def async_setup_platform(
@@ -75,7 +77,7 @@ async def async_get_zone_on_off(hass, zone):
             zone_on_off = root.find(".//setting").text
             return zone_on_off
     except Exception as e:
-        logger.error(f"Error fetching zone status: {e}")
+        logger.error(f"Error fetching zone {zone} status: {e}")
         return None
 
 async def async_get_zone_name(hass, zone):
@@ -89,7 +91,7 @@ async def async_get_zone_name(hass, zone):
             zone_name = root.find(".//name").text
             return zone_name.title()
     except Exception as e:
-        logger.error(f"Error fetching zone name: {e}")
+        logger.error(f"Error fetching zone {zone} name: {e}")
         return None
 
 # Classes
@@ -121,4 +123,4 @@ class ZoneNameSensor(SensorEntity):
         try:
             self._attr_native_value = await async_get_zone_name(self.hass,self.zone)
         except Exception as e:
-            logger.error(f"Failed to get zone name")
+            logger.error(f"Failed to set zone name")

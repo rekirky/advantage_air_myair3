@@ -23,7 +23,7 @@ import xml.etree.ElementTree as ET
 import aiohttp
 import logging
 
-from find_ip import find_ip_and_mac
+from advantage_air_myair3.find_ip import find_ip_and_mac
 
 logger = logging.getLogger(__name__)
 

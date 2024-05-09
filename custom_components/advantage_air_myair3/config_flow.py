@@ -9,11 +9,11 @@ _LOGGER = logging.getLogger(__name__)
 from const import (DOMAIN)
 from find_ip import find_ip_and_mac
 
-logging.info(f"Const_Flow Hit - {DOMAIN}")
+_LOGGER.info(f"Const_Flow Hit - {DOMAIN}")
 
 class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Advantage Air MyAir3."""
-    logging.info("Hit 1st class")
+    _LOGGER.info("Hit 1st class")
     VERSION = 1
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
     _ip_address = None
@@ -25,7 +25,7 @@ class AdvantageAirMyAir3ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         if user_input is None:
             if not self._ip_address or not self._mac_address:
                 self._ip_address, self._mac_address = await self.hass.async_add_executor_job(find_ip_and_mac)
-                logging.info(f"IP & Mac Found. {self._ip_address}")
+                _LOGGER.info(f"IP & Mac Found. {self._ip_address}")
 
             if self._ip_address is None or self._mac_address is None:
                 errors["base"] = "IP Discovery Error - Make sure system is turned on and connected to the same network"

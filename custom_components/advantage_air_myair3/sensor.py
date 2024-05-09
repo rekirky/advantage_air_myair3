@@ -26,11 +26,11 @@ import logging
 try:
     from .find_ip import find_ip_and_mac
 except:
-    logging.warning(f".find didn't work")
+    logging.error(f".find didn't work")
     try:
         from find_ip import find_ip_and_mac
     except:
-        logging.warning(f".find didn't work")
+        logging.error(f"find didn't work")
 
 logger = logging.getLogger(__name__)
 

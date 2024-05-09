@@ -48,7 +48,7 @@ async def async_login(hass,session):
     try:
         await session.get(site, params=params)
     except aiohttp.ClientError as e:
-        logger.error(f"Login failed: {e}")
+        logging.error(f"Login failed: {e}")
         # Consider a retry mechanism here
 
 async def async_get_on_off(hass):
@@ -62,7 +62,7 @@ async def async_get_on_off(hass):
             aircon_on_off = root.find(".//airconOnOff").text
             return aircon_on_off
     except Exception as e:
-        logger.error(f"Error fetching system status: {e}")
+        logging.error(f"Error fetching system status: {e}")
         return None
 
 async def async_get_zone_on_off(hass, zone):
@@ -77,7 +77,7 @@ async def async_get_zone_on_off(hass, zone):
             zone_on_off = root.find(".//setting").text
             return zone_on_off
     except Exception as e:
-        logger.error(f"Error fetching zone {zone} status: {e}")
+        logging.error(f"Error fetching zone {zone} status: {e}")
         return None
 
 async def async_get_zone_name(hass, zone):
@@ -91,7 +91,7 @@ async def async_get_zone_name(hass, zone):
             zone_name = root.find(".//name").text
             return zone_name.title()
     except Exception as e:
-        logger.error(f"Error fetching zone {zone} name: {e}")
+        logging.error(f"Error fetching zone {zone} name: {e}")
         return None
 
 # Classes
@@ -113,14 +113,15 @@ class ZonePowerSensor(SensorEntity):
             self._attr_native_value = await async_get_zone_on_off(self.hass, self.zone)
         except Exception as e:
             # Log an error message or handle the exception in a way that's appropriate for your setup
-            logger.error(f"Failed to update Zone {self.zone}: {e}")
+            logging.error(f"Failed to update Zone {self.zone}: {e}")
 
 class ZoneNameSensor(SensorEntity):
     def __init__(self, zone):
+        self.zone = zone
         self._attr_name = f"Air Con Zone {zone} Name"
 
     async def async_update(self):
         try:
             self._attr_native_value = await async_get_zone_name(self.hass,self.zone)
         except Exception as e:
-            logger.error(f"Failed to set zone name")
+            logging.error(f"Failed to set zone {self.zone} name")

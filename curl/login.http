@@ -1,0 +1,1 @@
+curl -X GET http://home19.local/login?password=password

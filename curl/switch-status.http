@@ -1,0 +1,4 @@
+
+###
+curl -s -X GET http://home19.local/getSystemData | awk -F'<airconOnOff>|</airconOnOff>' '{print $2}'
+

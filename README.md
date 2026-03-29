@@ -34,7 +34,7 @@ You can now:
 Auto-discovery via UDP has been **removed**.
 
 👉 You must now provide the device IP or hostname during setup  
-(e.g. `192.168.86.175` or `home19.local`)
+(e.g. `192.168.1.111` or `home19.local`)
 
 This change improves reliability across different MyAir hardware versions.
 
@@ -71,7 +71,7 @@ config/custom_components/
 2. Click **Add Integration**
 3. Search for **Advantage Air MyAir3**
 4. Enter your device:
-- IP address → `192.168.86.175`
+- IP address → `192.168.1.111`
 
 
 The integration will:

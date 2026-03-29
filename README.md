@@ -1,61 +1,153 @@
 # Advantage Air MyAir3 — Home Assistant Integration
 
-A custom Home Assistant integration for the **Advantage Air MyAir3** ducted air conditioning system. Uses the device's local HTTP API — no cloud dependency.
+A custom Home Assistant integration for the **Advantage Air MyAir3** ducted air conditioning system.
 
-## Features
+✅ Fully local control — no cloud dependency  
+✅ Simple setup using your device IP or hostname  
 
-- **System switch** — turn the air con on or off
-- **Zone switches** — turn individual zones on or off, labelled with the zone name from the device
-- **Auto-discovery** — finds the device on your network via UDP broadcast
-- **Manual IP fallback** — if discovery fails, enter the IP (or hostname) through the Home Assistant UI
-- **Local polling** — polls the device every 30 seconds
+---
 
-## Installation
+## 🚀 Version 3.0.0 (MVP Release)
+
+This is the first **working MVP release** of the integration.
+
+You can now:
+- Add your MyAir system to Home Assistant
+- Turn the **air conditioning system on/off**
+- Control **each individual zone**
+
+---
+
+## ✨ Features
+
+- **System switch** — turn the air con on or off  
+- **Zone switches** — turn individual zones on/off  
+- **Zone naming** — automatically pulled from your device  
+- **Manual setup (IP or hostname)** — reliable connection method  
+- **Local polling** — updates every 30 seconds  
+- **No cloud required** — fully local HTTP API  
+
+---
+
+## ⚠️ Important Change (v3.0.0)
+
+Auto-discovery via UDP has been **removed**.
+
+👉 You must now provide the device IP or hostname during setup  
+(e.g. `192.168.86.175` or `home19.local`)
+
+This change improves reliability across different MyAir hardware versions.
+
+---
+
+## 📦 Installation
 
 ### HACS (recommended)
 
-1. In Home Assistant, go to **HACS → Integrations → Custom repositories**
-2. Add `https://github.com/rekirky/advantage_air_myair3` as an **Integration**
-3. Install **Advantage Air MyAir3** from the list
+1. Go to **HACS → Integrations → Custom repositories**
+2. Add:
+
+https://github.com/rekirky/advantage_air_myair3
+
+as an **Integration**
+3. Install **Advantage Air MyAir3**
 4. Restart Home Assistant
+
+---
 
 ### Manual
 
-1. Copy the `custom_components/advantage_air_myair3` folder into your Home Assistant `config/custom_components/` directory
+1. Copy:
+
+custom_components/advantage_air_myair3
+
+into:
+
+config/custom_components/
+
 2. Restart Home Assistant
 
-## Setup
+---
 
-1. Go to **Settings → Devices & Services → Add Integration**
-2. Search for **Advantage Air MyAir3**
-3. The integration will attempt to auto-discover your device via UDP broadcast
-   - If found, it will configure automatically
-   - If not found, you will be prompted to enter the device IP address or hostname (e.g. `home19.local`)
+## ⚙️ Setup
 
-## Requirements
+1. Go to **Settings → Devices & Services**
+2. Click **Add Integration**
+3. Search for **Advantage Air MyAir3**
+4. Enter your device:
+- IP address → `192.168.86.175`
 
-- Home Assistant 2024.1.0 or newer
-- Advantage Air MyAir3 system on the same local network
-- Default device password (`password`) — this is the factory default
 
-## Entities
+The integration will:
+- Validate the connection via the device API
+- Store the IP for ongoing use
+
+---
+
+## 📋 Requirements
+
+- Home Assistant **2024.1.0+**
+- MyAir3 system on the **same local network**
+- Default password:
+
+password
+
+
+---
+
+## 🔌 Entities
 
 | Entity | Type | Description |
-|--------|------|-------------|
+|------|------|-------------|
 | Air Con Power | Switch | Main system on/off |
-| `<Zone Name>` (×8) | Switch | Per-zone on/off, named from the device |
+| `<Zone Name>` | Switch | Per-zone on/off |
 
-## Roadmap
+- Zone names are pulled directly from the device  
+- Updates automatically if renamed in the MyAir app  
+
+---
+
+## 🔧 How It Works
+
+- Uses the device's local HTTP API:
+
+http://<ip>/login?password=password
+
+- Authentication is performed before:
+- Each poll
+- Each control command
+- System data and zone data are retrieved via:
+- `getSystemData`
+- `getZoneData`
+
+---
+
+## 🛣️ Roadmap
 
 - [ ] Zone damper percentage control (slider)
-- [ ] Temperature sensors (per zone and central)
-- [ ] Central temperature set point
+- [ ] Temperature sensors (per zone + central)
+- [ ] Temperature set point control
 - [ ] Fan speed control
-- [ ] AC mode selection (cool / heat / fan only / dry)
-- [ ] Timer / schedule support
+- [ ] Mode selection (cool / heat / fan / dry)
+- [ ] Scheduling / timers
+- [ ] Better error handling / reconnect logic
 
-## Notes
+---
 
-- The device is queried at `http://<ip>:80/`
-- A login call is made before each poll and before each control command
-- Zone names are read from the device — they update automatically if you rename zones in the MyAir app
+## 🧠 Notes
+
+- Runs entirely locally — no internet required  
+- Works best with static IP or DHCP reservation  
+- Some MyAir firmware versions behave slightly differently — feedback welcome  
+
+---
+
+## 🤝 Contributing
+
+PRs, testing feedback, and device variations are very welcome 👍
+
+---
+
+## 📄 License
+
+MIT License

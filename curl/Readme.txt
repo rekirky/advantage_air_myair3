@@ -1,1 +1,0 @@
-Listing of curl commands to control air con

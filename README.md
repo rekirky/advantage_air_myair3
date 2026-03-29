@@ -124,13 +124,11 @@ http://<ip>/login?password=password
 
 ## 🛣️ Roadmap
 
-- [ ] Zone damper percentage control (slider)
-- [ ] Temperature sensors (per zone + central)
-- [ ] Temperature set point control
-- [ ] Fan speed control
-- [ ] Mode selection (cool / heat / fan / dry)
+- [x] Zone strength control (slider)
 - [ ] Scheduling / timers
 - [ ] Better error handling / reconnect logic
+
+> **Note:** Temperature, fan speed, and mode look to be controlled directly on the AirCon unit — these cannot be set via the MyAir3 API. This may be limited to my setup and could change depending on your own implementation.
 
 ---
 

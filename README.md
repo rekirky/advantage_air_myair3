@@ -56,6 +56,6 @@ A custom Home Assistant integration for the **Advantage Air MyAir3** ducted air 
 
 ## Notes
 
-- The device is queried at `http://<ip>:2025/`
+- The device is queried at `http://<ip>:80/`
 - A login call is made before each poll and before each control command
 - Zone names are read from the device — they update automatically if you rename zones in the MyAir app

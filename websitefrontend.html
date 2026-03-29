@@ -1,0 +1,60 @@
+// App.tsx
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+
+const AIRCON_HOST = "http://home19.local";
+const PASSWORD = "password";
+
+export default function AirconDashboard() {
+  const [airconStatus, setAirconStatus] = useState<null | boolean>(null);
+  const [error, setError] = useState("");
+
+  const login = async () => {
+    await axios.get(`${AIRCON_HOST}/login?password=${PASSWORD}`);
+  };
+
+  const fetchSystemData = async () => {
+    try {
+      const res = await axios.get(`${AIRCON_HOST}/getSystemData`, {
+        headers: { "Accept": "application/xml" },
+      });
+
+      const parser = new DOMParser();
+      const xml = parser.parseFromString(res.data, "application/xml");
+
+      const authenticated = xml.getElementsByTagName("authenticated")[0]?.textContent;
+      if (authenticated === "0") {
+        await login();
+        return fetchSystemData(); // retry after login
+      }
+
+      const onOffValue = xml.getElementsByTagName("airconOnOff")[0]?.textContent;
+      setAirconStatus(onOffValue === "1");
+    } catch (err) {
+      setError("Failed to fetch aircon status");
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchSystemData();
+    const interval = setInterval(fetchSystemData, 10000); // refresh every 10s
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 text-center p-4">
+      <div className="bg-white rounded-2xl shadow-lg p-10 w-full max-w-md">
+        <h1 className="text-2xl font-bold mb-4">Aircon Dashboard</h1>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {airconStatus === null ? (
+          <p>Loading...</p>
+        ) : (
+          <div className={`p-6 rounded-xl text-white text-xl font-semibold ${airconStatus ? "bg-green-500" : "bg-red-500"}`}>
+            {airconStatus ? "Aircon is ON 🌬️" : "Aircon is OFF ❄️"}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

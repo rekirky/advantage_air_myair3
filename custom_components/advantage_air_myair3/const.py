@@ -1,6 +1,6 @@
 """Constants for the Advantage Air MyAir3 integration."""
+from datetime import timedelta
 
-# Domain of the integration
 DOMAIN = "advantage_air_myair3"
-
-# Additional constants can be added here if necessary
+PORT = 2025
+SCAN_INTERVAL = timedelta(seconds=30)

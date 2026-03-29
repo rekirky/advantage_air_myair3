@@ -1,5 +1,4 @@
 import socket
-import time
 import xml.etree.ElementTree as ET
 import logging
 
@@ -22,6 +21,8 @@ def find_ip_and_mac():
 
         # Set up the listener socket
         listener = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listener.settimeout(5)  # Don't block forever waiting for a response
         listener.bind((local_ip, 3001))
 
         # Send the broadcast message
@@ -30,15 +31,11 @@ def find_ip_and_mac():
         sender.sendto(b'identify', (broadcast_ip, 3000))
         logger.info("Broadcast message sent.")
 
-        # Give it some time to respond
-        time.sleep(2)  # Adjust timing as necessary
-
-        # Try to receive the response
+        # Try to receive the response (timeout set above handles the wait)
         data, addr = listener.recvfrom(1024)
         if data:
             logger.info("Received data.")
             root = ET.fromstring(data.decode())
-
             # Try to extract MAC and IP address
             mac = root.find('.//mac')
             ip = root.find('.//ip')
@@ -59,8 +56,12 @@ def find_ip_and_mac():
 
     finally:
         # Cleanup sockets
-        sender.close()
-        listener.close()
+        try:
+            sender.close()
+            listener.close()
+        except Exception as e:
+            logger.error(f"An error occurred {e}")
+            
 
 if __name__ == "__main__":
     find_ip_and_mac()

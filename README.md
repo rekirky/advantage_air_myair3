@@ -45,11 +45,7 @@ This change improves reliability across different MyAir hardware versions.
 ### HACS (recommended)
 
 1. Go to **HACS → Integrations → Custom repositories**
-2. Add:
-
-https://github.com/rekirky/advantage_air_myair3
-
-as an **Integration**
+2. Add: https://github.com/rekirky/advantage_air_myair3 as an **Integration**
 3. Install **Advantage Air MyAir3**
 4. Restart Home Assistant
 

@@ -1,4 +1,4 @@
-"""Switch platform for Advantage Air MyAir3."""
+"""Switch platform for Advantage Air MyAir3 — main system on/off."""
 import logging
 
 from homeassistant.components.switch import SwitchEntity
@@ -18,15 +18,8 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up switches from a config entry."""
     coordinator: MyAirCoordinator = hass.data[DOMAIN][entry.entry_id]
-    num_zones = coordinator.data.get("num_zones", 8)
-
-    entities = [AirConSwitch(coordinator)]
-    for zone_id in range(1, num_zones + 1):
-        entities.append(ZoneSwitch(coordinator, zone_id))
-
-    async_add_entities(entities)
+    async_add_entities([AirConSwitch(coordinator)])
 
 
 class AirConSwitch(CoordinatorEntity, SwitchEntity):
@@ -46,28 +39,3 @@ class AirConSwitch(CoordinatorEntity, SwitchEntity):
 
     async def async_turn_off(self, **kwargs) -> None:
         await self.coordinator.async_set_system(False)
-
-
-class ZoneSwitch(CoordinatorEntity, SwitchEntity):
-    """On/off switch for a single zone."""
-
-    def __init__(self, coordinator: MyAirCoordinator, zone_id: int) -> None:
-        super().__init__(coordinator)
-        self._zone_id = zone_id
-        self._attr_unique_id = f"{coordinator.ip_address}_zone_{zone_id}"
-
-    @property
-    def name(self) -> str:
-        zone = self.coordinator.data.get("zones", {}).get(self._zone_id, {})
-        return zone.get("name", f"Zone {self._zone_id}")
-
-    @property
-    def is_on(self) -> bool:
-        zone = self.coordinator.data.get("zones", {}).get(self._zone_id, {})
-        return zone.get("setting") == "1"
-
-    async def async_turn_on(self, **kwargs) -> None:
-        await self.coordinator.async_set_zone(self._zone_id, True)
-
-    async def async_turn_off(self, **kwargs) -> None:
-        await self.coordinator.async_set_zone(self._zone_id, False)

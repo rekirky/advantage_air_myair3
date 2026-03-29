@@ -10,7 +10,7 @@ from .coordinator import MyAirCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["switch", "number"]
+PLATFORMS = ["switch", "light"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:

@@ -65,7 +65,7 @@ MODE_MAP = {'cool': 1, 'heat': 2, 'fan_only': 3, 'dry': 5}
 
 
 class MyAir:
-    def __init__(self, host, port=2025, key=None):
+    def __init__(self, host, port=80, key=None):
         self.host = host
         self.port = port
         self.key = key

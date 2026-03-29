@@ -22,7 +22,7 @@ class ApiError(Exception):
 class advantage_air:
     """AdvantageAir Connection"""
 
-    def __init__(self, ip, port=2025, session=None, retry=5):
+    def __init__(self, ip, port=80, session=None, retry=5):
 
         if session is None:
             session = aiohttp.ClientSession()

@@ -1,13 +1,12 @@
 """DataUpdateCoordinator for Advantage Air MyAir3."""
 import logging
 import xml.etree.ElementTree as ET
-from datetime import timedelta
 
 import aiohttp
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from .const import DOMAIN, PORT, SCAN_INTERVAL
+from .const import DOMAIN, SCAN_INTERVAL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -19,7 +18,7 @@ class MyAirCoordinator(DataUpdateCoordinator):
 
     def __init__(self, hass, ip_address: str) -> None:
         self.ip_address = ip_address
-        self.base_url = f"http://{ip_address}:{PORT}/"
+        self.base_url = f"http://{ip_address}/"
         self.mac: str | None = None
         super().__init__(hass, _LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL)
 
@@ -116,6 +115,10 @@ class MyAirCoordinator(DataUpdateCoordinator):
                 zones[i] = {
                     "name": name.title(),
                     "setting": zone_el.findtext("setting") or "0",
+                    "percent": int(zone_el.findtext("userPercentSetting") or "0"),
+                    "percent_avail": zone_el.findtext("userPercentAvail") == "1",
+                    "min_damper": int(zone_el.findtext("minDamper") or "0"),
+                    "max_damper": int(zone_el.findtext("maxDamper") or "100"),
                 }
         return zones
 
@@ -142,6 +145,18 @@ class MyAirCoordinator(DataUpdateCoordinator):
         async with session.get(
             f"{self.base_url}setZoneData",
             params={"zone": zone_id, "zoneSetting": "1" if on else "0"},
+            timeout=_TIMEOUT,
+        ) as resp:
+            await resp.text()
+        await self.async_request_refresh()
+
+    async def async_set_zone_percent(self, zone_id: int, percent: int) -> None:
+        """Set the damper opening percentage for a zone (0-100)."""
+        session = async_get_clientsession(self.hass)
+        await self._login(session)
+        async with session.get(
+            f"{self.base_url}setZoneData",
+            params={"zone": zone_id, "userPercentSetting": percent},
             timeout=_TIMEOUT,
         ) as resp:
             await resp.text()
